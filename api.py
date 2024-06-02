@@ -4,29 +4,26 @@ import requests
 
 app = Flask(__name__)
 url = "https://www.pensador.com/frases_de_motivacao/"
-page = 0
 
 @app.route("/api/<page>")
 def api(page):
     frases = []
-    if page:
-        req = requests.get(url=f"{url}{page}")
-        if req.status_code == 200:
-            soup = BeautifulSoup(req.content,"html.parser")
-            p_frase = soup.find_all("p","frase")
-            span_autor = soup.find_all("span","author-name")
+    req = requests.get(url=f"{url}{page}")
 
-            for frase,autor in zip(p_frase,span_autor):
-                frases.append({
-                    "frase": frase.text,
-                    "autor": autor.text
-                })
-            return frases
-        else:
-            return {"status: 400"},400
+    if req.status_code == 200:
+        soup = BeautifulSoup(req.content,"html.parser")
+        p_frase = soup.find_all("p","frase")
+        span_autor = soup.find_all("span","author-name")
+
+        for frase,autor in zip(p_frase,span_autor):
+            frases.append({
+                "frase": frase.text,
+                "autor": autor.text
+            })
+
+        return frases
     else:
-        return "forneça uma pagina"
-
+        return {"status: 400"}
 
 if __name__ == "__main__":
     app.run(debug=True)
